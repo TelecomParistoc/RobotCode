@@ -1,0 +1,24 @@
+1] Modéliser une moitié de terrain => tous les obstacles, les actions (pos de début, pos de fin, nombre de points)
+
+2] Automate d'état :
+    mode inactif
+    mode arrêté par robot devant
+    mode arrêté par robot devant depuis longtemps (3s)
+    mode moving to action
+    mode action
+    mode arrêté par robot devant pendant action
+    mode arrêté par robot devant depuis longtemps (3s) pendant action
+
+3] Continuer le fichier principal :
+    attendre le retrait du starter
+        |-> étape loop
+    attendre la procédure de test (si le robot est lancé ne fait rien)
+        |-> étape calibrage
+
+    étape loop :
+        récupérer les types de coquillages
+        lancer le compteur de temps
+        tant que temps < 1min30
+            mettre à jour l'automate
+
+    étape calibrage :
