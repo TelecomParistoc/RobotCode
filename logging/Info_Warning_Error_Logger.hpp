@@ -35,10 +35,10 @@ class Info_Warning_Error_Logger : public Logger
 {
     public:
         Info_Warning_Error_Logger(bool date = true, int type = -1);
-	
-	void setDateAuto(bool date = true);
-	void setEndlineAuto(bool endline = true);
-	void setType(int type = -1);
+
+    	void setDateAuto(bool date = true);
+    	void setEndlineAuto(bool endline = true);
+    	void setType(int type = -1);
         void setType(const std::string& type);
 
         template <typename T>

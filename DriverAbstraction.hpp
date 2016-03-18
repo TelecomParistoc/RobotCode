@@ -21,6 +21,7 @@ class DriverAbstraction
         static void back(const Vector<2,float>& targetPos);
 
     private:
+        float x,y;
         static std::function<void(void)> wallDetectedFrontCallback, wallDetectedBehindCallback, robotDetectedFrontCallback, robotDetectedBehindCallback;
 };
 

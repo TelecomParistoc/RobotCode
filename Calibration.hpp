@@ -7,7 +7,6 @@ class Calibration
 
         void launch();
         void reset(std::shared_ptr<Situation> s);
-        void setGoal(const Vector<2,float>& goal);
 
         void wallDetectedFront();
         void wallDetectedBehind();

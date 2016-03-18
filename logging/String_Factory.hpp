@@ -46,6 +46,12 @@ std::string String_Factory::toString(T val, U ... next)
     return temp+String_Factory::toString(next...);
 }
 
+template <typename T>
+std::string String_Factory::toString(T val)
+{
+    return val.toString();
+}
+
 template <>
 inline std::string String_Factory::toString(const std::string &val)
 {

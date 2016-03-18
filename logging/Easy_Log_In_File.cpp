@@ -17,7 +17,8 @@ std::shared_ptr<Info_Warning_Error_Logger> Easy_Log_In_File::getErrorLog()
 
 void Easy_Log_In_File::setFolderPath(const std::string& path)
 {
-    instance = std::shared_ptr<Easy_Log_In_File>(new Easy_Log_In_File(path));
+    if(path!=instance->path)
+        instance = std::shared_ptr<Easy_Log_In_File>(new Easy_Log_In_File(path));
 }
 
 Easy_Log_In_File::Easy_Log_In_File(const std::string& folderPath) :
@@ -25,6 +26,7 @@ Easy_Log_In_File::Easy_Log_In_File(const std::string& folderPath) :
     warningLog(std::shared_ptr<Info_Warning_Error_Logger>(new Info_Warning_Error_Logger())),
     errorLog(std::shared_ptr<Info_Warning_Error_Logger>(new Info_Warning_Error_Logger()))
 {
+    path = folderPath;
     infoPath = folderPath+Logger::date()+".infoLog";
     warningPath = folderPath+Logger::date()+".warningLog";
     errorPath = folderPath+Logger::date()+".errorLog";

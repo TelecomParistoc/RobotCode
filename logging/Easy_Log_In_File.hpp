@@ -51,6 +51,7 @@ class Easy_Log_In_File
         std::shared_ptr<Info_Warning_Error_Logger> warningLog;
         std::shared_ptr<Info_Warning_Error_Logger> errorLog;
 
+        std::string path;
         std::string infoPath;
         std::string warningPath;
         std::string errorPath;

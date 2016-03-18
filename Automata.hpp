@@ -5,34 +5,45 @@ enum State{ComputeSituation, MoveToAction, Action, BlockedByRobot, BlockedByRobo
 class Automata
 {
     public:
-        void launch();
+        static void reset(std::shared_ptr<Situation> situation, std::shared_ptr<ActionBoard> actions, std::shared_ptr<Calibration> recalibration);
+        static void launch();
 
-        void computeSituationState();
-        void moveToActionState();
-        void actionState();
-        void blockedByRobotState();
-        void checkWallPredictedWhenMoving();
-        void checkWallPredictedWhenActing();
-        void blockedByRobotDuringNotInterruptibleAction();
-        void recalibrate();
+        static void computeSituationState();
+        static void moveToActionState();
+        static void actionState();
+        static void blockedByRobotState();
+        static void checkWallPredictedWhenMoving();
+        static void checkWallPredictedWhenActing();
+        static void blockedByRobotDuringNotInterruptibleAction();
+        static void recalibrate();
 
     private:
-        bool detectWall;
-        bool detectRobot;
-        float counterBlock;
-        int unpredictedWallsCounter;
-        int thresholdUnpredictedWalls;
+        static bool detectWall;
+        static bool detectRobot;
+        static float counterBlock;
+        static int unpredictedWallsCounter;
+        static int thresholdUnpredictedWalls;
 
-        std::map<State,std::function<void(void)> > chooseWay;
+        static std::map<State,std::function<void(void)> > chooseWay;
 
-        State currentState;
+        static State currentState;
 
-        std::mutex mutex;
+        static std::mutex mutex;
 
-        std::shared_ptr<Situation> situation;
-        std::shared_ptr<ActionBoard> actions;
-        std::shared_ptr<Calibration> recalibration;
+        static std::shared_ptr<Situation> situation;
+        static std::shared_ptr<ActionBoard> actions;
+        static std::shared_ptr<Calibration> recalibration;
 };
+
+
+void Automata::launch()
+{
+    while(!timeOver)
+    {
+        chooseWay[currentState]();
+        usleep(2000);
+    }
+}
 
 void Automata::computeSituationState()
 {
@@ -166,13 +177,4 @@ void Automata::recalibrate()
 {
     Logger::getStaticLogger()<<"State : recalibrating (not yet implemented)"<<std::endl;
     currentState = ComputeSituation;
-}
-
-void Automata::launch()
-{
-    while(!timeOver)
-    {
-        chooseWay(currentState);
-        usleep(2000);
-    }
 }
