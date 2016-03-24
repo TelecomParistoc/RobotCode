@@ -1,3 +1,7 @@
+#ifndef SITUATION_HPP
+#define SITUATION_HPP
+
+
 #include "pathFollower.hpp"
 
 
@@ -20,6 +24,13 @@ class Situation
         static Vector<2,float> getNearestSideOnTable(const Vector<2,float>& v);
         static Vector<2,float> getNearestCornerOnTable(const Vector<2,float>& v);
 
+        static void updateAngleStartingMove();
+        static void updatePositionEndingMove();
+
     private:
-        Vector<2,float> currentPosition;
+        static Vector<2,float> currentPosition;
+        static float currentAngle;
 };
+
+
+#endif
