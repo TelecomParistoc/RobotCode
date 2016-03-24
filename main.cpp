@@ -9,8 +9,8 @@ int main()
     std::shared_ptr<Info_Warning_Error_Logger> logger = Easy_Log_In_File::getInfoLog();
     logger->addHandler(std::shared_ptr<Stdout_Handler>(new Stdout_Handler())); //a commenter lors de la mise en prod
 
-    Situation::resetMapDescription("data/mapDescription.txt");
     Situation::resetRobotsDescription("data/robotDescription.txt");
+    Situation::resetMapDescription("data/mapDescription.txt");
 
     std::shared_ptr<Situation> situation(new Situation());
     std::shared_ptr<ActionBoard> actions(new ActionBoard("data/actionsDescription.txt"));

@@ -108,10 +108,16 @@ void DriverAbstraction::toggleCalibration(bool calibrate)
 
 void DriverAbstraction::init()
 {
+    logger = Easy_Log_In_File::getInfoLog();
+
     //set callbacks
     onGameStart(&DriverAbstraction::reactOnJack);
     setBlockingCallback(&DriverAbstraction::reactOnWall);
     /*????? wait for spec*/(&DriverAbstraction::reactOnRobot);
     setMoveStartCallback(&Situation::updateAngleStartingMove);
     setMoveEndCallback(&Situation::updatePositionEndingMove);
+
+    initMotionController();
+    setRobotDistance(0);
+    setRobotHeading(0);
 }

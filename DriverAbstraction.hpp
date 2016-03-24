@@ -40,6 +40,8 @@ class DriverAbstraction
         static bool calibrationFinished;
         static bool logging;
         static bool calibrate;
+
+        static std::shared_ptr<Info_Warning_Error_Logger> logger;
 };
 
 
