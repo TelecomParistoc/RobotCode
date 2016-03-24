@@ -112,4 +112,6 @@ void DriverAbstraction::init()
     onGameStart(&DriverAbstraction::reactOnJack);
     setBlockingCallback(&DriverAbstraction::reactOnWall);
     /*????? wait for spec*/(&DriverAbstraction::reactOnRobot);
+    setMoveStartCallback(&Situation::updateAngleStartingMove);
+    setMoveEndCallback(&Situation::updatePositionEndingMove);
 }
