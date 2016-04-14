@@ -10,7 +10,8 @@ CFLAGS = -O2 -std=c++11 -Wall -Werror
 LDFLAGS= -lrobot -lrobotdriver -lpathfollower
 SCRIPT = script_copy_in_initd.sh
 DEST_SCRIPT = launchLoop.sh
-DEST = /etc/init.d
+DEST = /var/apps
+DEST_INIT = /etc/init.d
 VPATH = build/
 
 vpath %.cpp src_main/
@@ -33,15 +34,17 @@ build/$(TARGET2): $(OBJECTS2)
 
 clean:
 	rm -f build/*.o build/*.d
+	rm build/$(TARGET1)
+	rm build/$(TARGET2)
 	rm $(DEST)/$(TARGET2)
 	rm $(DEST)/$(TARGET3)
-	rm $(DEST)/$(DEST_SCRIPT)
+	rm $(DEST_INIT)/$(DEST_SCRIPT)
 
 update_initd: build/$(TARGET2)
 	cp build/$(TARGET2) $(DEST)/$(TARGET2)
 	cp build/$(TARGET1) $(DEST)/$(TARGET3)
-	cp $(SCRIPT) $(DEST)/$(DEST_SCRIPT)
-	chmod 755 $(DEST)/$(DEST_SCRIPT)
+	cp $(SCRIPT) $(DEST_INIT)/$(DEST_SCRIPT)
+	chmod 755 $(DEST_INIT)/$(DEST_SCRIPT)
 	update-rc.d $(DEST_SCRIPT) defaults
 
 
