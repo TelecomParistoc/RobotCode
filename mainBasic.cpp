@@ -8,13 +8,13 @@
 #include <chrono>
 
 
-std::vector<std::string> ways = {"bidon"};
+std::vector<std::string> ways = {"move_cubes_go_fish","water2net","net2water","water2net","net2water","water2net","net2rocks","rocks2rocks"};
+//std::vector<Action> actions = {Action(),Action("pecher"),Action("relacher"),Action("pecher"),Action("relacher"),Action("pecher"),Action("relacher"),Action(),Action()};
 
 bool start = false;
 bool started = false;
 bool blocked = false;
-bool seeFrontBlocked = false;
-bool seeBehindBlocked = false;
+bool seeBlocked = false;
 
 int way = 0;
 std::pair<double,double> curPos = std::pair<double,double>(40,1000);
@@ -22,11 +22,8 @@ std::pair<double,double> curPos = std::pair<double,double>(40,1000);
 void go()
 {start = true;}
 
-void checkDirectionFrontAndReact()
-{seeFrontBlocked = true;}
-
-void checkDirectionBehindAndReact()
-{seeBehindBlocked = true;}
+void checkCollisionAndReact(int)
+{seeBlocked = true;}
 
 void endWay()
 {
@@ -35,7 +32,7 @@ void endWay()
     PathFollower::setCurrentPosition(curPos.first,curPos.second);
     way++;
     if(way<ways.size())
-        ffollow(ways[way], endWay);
+        ffollow(ways[way].c_str(), &endWay);
 }
 
 int main()
@@ -44,10 +41,9 @@ int main()
     setRGB(255, 0, 0);
 
     ///TODO: mettre les callbacks appropriés
-    setJackCallback(&go);
-    setRobotFrontCallback(&checkDirectionFrontAndReact);
-    setRobotBehindCallback(&checkDirectionBehindAndReact);
-    ///
+    //setJackCallback(&go);
+    start = true;
+    onCollisionDetect(&checkCollisionAndReact);
 
     setMoveStartCallback(&PathFollower::updateAngleStartingMove);
     setMoveEndCallback(&PathFollower::updatePositionEndingMove);
@@ -58,37 +54,43 @@ int main()
     typedef std::chrono::milliseconds milliseconds;
     Clock::time_point clk_start = Clock::now();
 
-    double seconds = 20;
+    double seconds = 90;
 
     while(std::chrono::duration_cast<milliseconds>(Clock::now()-clk_start).count()<seconds*1000)
     {
         if(start&&!started)
         {
+            printf("Start\n");
             started = true;
-            ffollow(ways[way], endWay);
+            ffollow(ways[way].c_str(), &endWay);
         }
 
-        if(seeFrontBlocked)
-        {
+        if(seeBlocked)
             if(PathFollower::isSpeedPositive())
-                if(!PathFollower::isPaused())
-                {
-                    blocked = true;
-                    PathFollower::pause();
-                }
-        }
+            {
+                if(!isRobotFront())
+                    seeBlocked = false;
+                else
+                    if(!PathFollower::isPaused())
+                    {
+                        blocked = true;
+                        PathFollower::pause();
+                    }
+            }
+            else
+            {
+                if(!isRobotBehind())
+                    seeBlocked = false;
+                else
+                    if(!PathFollower::isSpeedPositive())
+                        if(!PathFollower::isPaused())
+                        {
+                            blocked = true;
+                            PathFollower::pause();
+                        }
+            }
 
-        if(seeBehindBlocked)
-        {
-            if(!PathFollower::isSpeedPositive())
-                if(!PathFollower::isPaused())
-                {
-                    blocked = true;
-                    PathFollower::pause();
-                }
-        }
-
-        if(!seeFrontBlocked&&!seeBehindBlocked)
+        if(!seeBlocked)
             if(blocked)
             {
                 blocked = false;
@@ -99,7 +101,7 @@ int main()
         curDir = PathFollower::getCurrentDirection();
         std::cout<<curPos.first<<" "<<curPos.second<<";"<<curDir.first<<" "<<curDir.second<<std::endl;*/
 
-        waitFor(10);
+        waitFor(50);
     }
 
     return 0;
