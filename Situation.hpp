@@ -31,6 +31,9 @@ float Situation::robotRadius = 1;
 AStar Situation::shortestPathMatrix;
 std::shared_ptr<Info_Warning_Error_Logger> Situation::logger;
 
+void Situation::init()
+{}
+
 void Situation::resetMapDescription(const std::string& path)
 {
     std::ifstream ifs(path.c_str(),std::ios::in);

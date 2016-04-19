@@ -1,10 +1,11 @@
 
 
-enum State{ComputeSituation, MoveToAction, Action, BlockedByRobot, BlockedByRobotNotInterruptible, countWallsUnpredictedMoving, countWallsUnpredictedActing, Recalibrate};
+enum State{ComputeSituation, MoveToAction, Action, BlockedByRobot, BlockedByRobotNotInterruptible, CountWallsUnpredictedMoving, CountWallsUnpredictedActing, Recalibrate};
 
 class Automata
 {
     public:
+        static void init();
         static void reset(std::shared_ptr<Situation> situation, std::shared_ptr<ActionBoard> actions, std::shared_ptr<Calibration> recalibration);
         static void launch();
 
@@ -35,6 +36,31 @@ class Automata
         static std::shared_ptr<Calibration> recalibration;
 };
 
+void Automata::init()
+{
+    chooseWay[ComputeSituation] = std::bind(Automata::computeSituationState);
+    chooseWay[MoveToAction] = std::bind(Automata::moveToActionState);
+    chooseWay[Action] = std::bind(Automata::actionState);
+    chooseWay[BlockedByRobot] = std::bind(Automata::blockedByRobotState);
+    chooseWay[BlockedByRobotNotInterruptible] = std::bind(Automata::blockedByRobotDuringNotInterruptibleAction);
+    chooseWay[CountWallsUnpredictedMoving] = std::bind(Automata::checkWallPredictedWhenMoving);
+    chooseWay[CountWallsUnpredictedActing] = std::bind(Automata::checkWallPredictedWhenActing);
+    chooseWay[Recalibrate] = std::bind(Automata::recalibrate);
+
+    thresholdUnpredictedWalls = 5;
+}
+
+void Automata::reset(std::shared_ptr<Situation> situation, std::shared_ptr<ActionBoard> actions, std::shared_ptr<Calibration> recalibration)
+{
+    Automata::situation = situation;
+    Automata::actions = actions;
+    Automata::recalibration = recalibration;
+    Automata::currentState = ComputeSituation;
+    detectWall = false;
+    detectRobot = false;
+    counterBlock = 0;
+    unpredictedWallsCounter = 0;
+}
 
 void Automata::launch()
 {
