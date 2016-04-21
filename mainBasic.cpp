@@ -8,7 +8,7 @@
 #include <chrono>
 
 
-std::vector<std::string> ways = {"move_cubes_go_fish","water2net","net2water","water2net","net2water","water2net","net2rocks","rocks2rocks"};
+std::vector<std::string> ways = {"start2water","water2net","net2water","water2net","net2water","water2net","net2rocks","rocks2rocks"};
 //std::vector<Action> actions = {Action(),Action("pecher"),Action("relacher"),Action("pecher"),Action("relacher"),Action("pecher"),Action("relacher"),Action(),Action()};
 
 bool start = false;
