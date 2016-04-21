@@ -8,7 +8,7 @@
 #include <chrono>
 
 
-std::vector<std::string> ways = {"test_calibration_final","move_cubes_go_fish","water2net","net2water","water2net","net2water","water2net","net2rocks","rocks2rocks"};
+std::vector<std::string> ways = {"move_cubes_go_fish","water2net","net2water","water2net","net2water","water2net","net2rocks","rocks2rocks"};
 //std::vector<Action> actions = {Action(),Action("pecher"),Action("relacher"),Action("pecher"),Action("relacher"),Action("pecher"),Action("relacher"),Action(),Action()};
 
 bool start = false;
@@ -97,9 +97,9 @@ int main()
                 PathFollower::continueMoving();
             }
 
-        /*curPos = PathFollower::getCurrentPos();
+        curPos = PathFollower::getCurrentPos();
         curDir = PathFollower::getCurrentDirection();
-        std::cout<<curPos.first<<" "<<curPos.second<<";"<<curDir.first<<" "<<curDir.second<<std::endl;*/
+        std::cout<<curPos.first<<" "<<curPos.second<<";"<<curDir.first<<" "<<curDir.second<<std::endl;
 
         waitFor(50);
     }
