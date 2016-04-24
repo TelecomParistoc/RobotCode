@@ -8,10 +8,11 @@
 #include <chrono>
 
 
-std::vector<std::string> ways = {"start2water","water2net","net2water","water2net","net2water","water2net","net2rocks","rocks2rocks"};
+std::vector<std::string> ways = {"move_cubes_go_fish","water2net","net2water","water2net","net2water","water2net","net2rocks","rocks2rocks"};
 //std::vector<Action> actions = {Action(),Action("pecher"),Action("relacher"),Action("pecher"),Action("relacher"),Action("pecher"),Action("relacher"),Action(),Action()};
 
 bool start = false;
+bool isMovingToAction = false;
 bool started = false;
 bool blocked = false;
 bool seeBlocked = false;
@@ -25,14 +26,22 @@ void go()
 void checkCollisionAndReact(int)
 {seeBlocked = true;}
 
-void endWay()
+void endAction()
 {
-    std::cout<<"End of way "<<way<<std::endl;
+    std::cout<<"End of action "<<way<<std::endl;
     curPos = PathFollower::getCurrentPos();
     PathFollower::setCurrentPosition(curPos.first,curPos.second);
     way++;
     if(way<ways.size())
         ffollow(ways[way].c_str(), &endWay);
+    isMovingToAction = true;
+}
+
+void endWay()
+{
+    std::cout<<"End of way "<<way<<std::endl;
+    actions[way].start();
+    isMovingToAction = false;
 }
 
 int main()
@@ -42,6 +51,7 @@ int main()
 
     ///TODO: mettre les callbacks appropriés
     //setJackCallback(&go);
+    onGameStart(&go);
     start = true;
     onCollisionDetect(&checkCollisionAndReact);
 
@@ -55,7 +65,7 @@ int main()
     Clock::time_point clk_start = Clock::now();
 
     double seconds = 90;
-
+    endWay();
     while(std::chrono::duration_cast<milliseconds>(Clock::now()-clk_start).count()<seconds*1000)
     {
         if(start&&!started)
@@ -64,6 +74,10 @@ int main()
             started = true;
             ffollow(ways[way].c_str(), &endWay);
         }
+
+        if(!isMovingToAction)
+            if(actions[way].isFinished())
+                endAction();
 
         if(seeBlocked)
             if(PathFollower::isSpeedPositive())
@@ -74,7 +88,10 @@ int main()
                     if(!PathFollower::isPaused())
                     {
                         blocked = true;
-                        PathFollower::pause();
+                        if(isMovingToAction)
+                            PathFollower::pause();
+                        else
+                            actions[way].pauseAction();
                     }
             }
             else
@@ -86,7 +103,10 @@ int main()
                         if(!PathFollower::isPaused())
                         {
                             blocked = true;
-                            PathFollower::pause();
+                            if(isMovingToAction)
+                                PathFollower::pause();
+                            else
+                                actions[way].pauseAction();
                         }
             }
 
@@ -94,13 +114,17 @@ int main()
             if(blocked)
             {
                 blocked = false;
-                PathFollower::continueMoving();
+                if(isMovingToAction)
+                    PathFollower::continueMoving();
+                else
+                    actions[way].continueAction();
             }
 
-        curPos = PathFollower::getCurrentPos();
-        std::cout<<curPos.first<<" "<<curPos.second<<std::endl;
+        /*curPos = PathFollower::getCurrentPos();
+        curDir = PathFollower::getCurrentDirection();
+        std::cout<<curPos.first<<" "<<curPos.second<<";"<<curDir.first<<" "<<curDir.second<<std::endl;*/
 
-        waitFor(100);
+        waitFor(50);
     }
 
     return 0;
