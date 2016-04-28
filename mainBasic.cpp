@@ -8,8 +8,8 @@
 #include <chrono>
 
 
-std::vector<std::string> ways = {"move_cubes_go_fish","water2net","net2water","water2net","net2water","water2net","net2rocks","rocks2rocks"};
-//std::vector<Action> actions = {Action(),Action("pecher"),Action("relacher"),Action("pecher"),Action("relacher"),Action("pecher"),Action("relacher"),Action(),Action()};
+#include "WaysAndActions.hpp"
+
 
 bool start = false;
 bool isMovingToAction = false;
@@ -49,10 +49,9 @@ int main()
     initRobot();
     setRGB(255, 0, 0);
 
-    ///TODO: mettre les callbacks appropriés
-    //setJackCallback(&go);
-    onGameStart(&go);
-    start = true;
+    initWaysAndActions();
+
+    onGameStart(&go); //start = true;
     onCollisionDetect(&checkCollisionAndReact);
 
     setMoveStartCallback(&PathFollower::updateAngleStartingMove);
