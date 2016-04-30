@@ -4,6 +4,7 @@
 class Action
 {
     public:
+        Action() {}
         Action(const std::function<void()>& start, const std::function<void()>& pause, const std::function<void()>& cont, const std::function<bool()>& isFinished);
         //provide C binding
         Action(void (*start)(void), void (*pause)(void), void (*cont)(void), int (*isFinished)(void));

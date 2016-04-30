@@ -15,16 +15,29 @@ Action::Action(void (*start)(void), void (*pause)(void), void (*cont)(void), int
 {}
 
 void Action::start()
-{startFunction();}
+{
+    if(startFunction)
+        startFunction();
+}
 
 void Action::pauseAction()
-{pauseFunction();}
+{
+    if(pauseFunction)
+        pauseFunction();
+}
 
 void Action::continueAction()
-{continueFunction();}
+{
+    if(continueFunction)
+        continueFunction();
+}
 
 bool Action::isFinished() const
-{return isFinishedFunction();}
+{
+    if(isFinishedFunction)
+        return isFinishedFunction();
+    return true;
+}
 
 std::function<bool()> Action::convertCtoCpp(int (*isFinished)(void))
 {return std::bind(&Action::convertIntCtoBool,std::function<int()>(isFinished));}
