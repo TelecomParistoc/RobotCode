@@ -34,16 +34,15 @@ build/$(TARGET2): $(OBJECTS2)
 
 clean:
 	rm -f build/*.o build/*.d
-	rm build/$(TARGET1)
-	rm build/$(TARGET2)
-	rm $(DEST)/$(TARGET2)
-	rm $(DEST)/$(TARGET3)
-	rm $(DEST_INIT)/$(DEST_SCRIPT)
+	rm -f $(DEST)/$(TARGET2)
+	rm -f $(DEST)/$(TARGET3)
+	rm -f $(DEST_INIT)/$(DEST_SCRIPT)
 
 update_initd: build/$(TARGET2)
 	cp build/$(TARGET2) $(DEST)/$(TARGET2)
 	cp build/$(TARGET1) $(DEST)/$(TARGET3)
 	cp $(SCRIPT) $(DEST_INIT)/$(DEST_SCRIPT)
+
 	chmod 755 $(DEST_INIT)/$(DEST_SCRIPT)
 	update-rc.d $(DEST_SCRIPT) defaults
 

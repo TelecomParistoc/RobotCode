@@ -22,7 +22,7 @@ case "$1" in
 		;;
 	stop)
 		echo "Stopping loop..."
-		killproc /var/apps/loop
+		killall loop
 		;;
 	reload)
 		echo "Reloading loop..."
@@ -33,11 +33,8 @@ case "$1" in
 		sleep 1
 		$0 start
 		;;
-	status)
-		statusproc /var/apps/loop
-		;;
 	*)
-		echo "Usage: $0 {start|stop|reload|restart|status}"
+		echo "Usage: $0 {start|stop|reload|restart}"
 		exit 1
 		;;
 esac

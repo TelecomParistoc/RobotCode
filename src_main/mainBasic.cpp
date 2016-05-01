@@ -10,53 +10,33 @@
 #include "WaysAndActions.hpp"
 
 
-bool start = false;
-bool isMovingToAction = false;
-bool started = false;
-bool blocked = false;
-bool pausePath = false;
-bool seeBlocked = false;
-
-int way = -1;
-
-void go()
-{start = true;}
-
-void checkCollisionAndReact(int)
-{seeBlocked = true;}
-
-void endWay()
+void pauseActionOrWay()
 {
-    std::cout<<"End of way "<<way<<std::endl;
-    way++;
-    if(way<(int)ways.size())
-        actions[way].start();
-    isMovingToAction = false;
-}
-
-void endAction()
-{
-    std::cout<<"End of action "<<way<<std::endl;
-    curPos = PathFollower::getCurrentPos();
-    PathFollower::setCurrentPosition(curPos.first,curPos.second);
-    if(way<(int)ways.size())
-        ffollow(ways[way].c_str(), &endWay);
-    isMovingToAction = true;
+	if(!PathFollower::isPaused())
+	{
+		blocked = true;
+		pausePath = false;
+		if(isMovingToAction)
+		{
+			pausePath = true;
+			PathFollower::pause();
+		}
+		else
+			actions[way].pauseAction();
+	}
 }
 
 int main()
 {
 	initRobot();
-	setRGB(255, 0, 0);
-
 	initWaysAndActions();
 
-	onGameStart(&go); //start = true;
+	onGameStop(&allume);
+
 	onCollisionDetect(&checkCollisionAndReact);
 
 	setMoveStartCallback(&PathFollower::updateAngleStartingMove);
 	setMoveEndCallback(&PathFollower::updatePositionEndingMove);
-	setCurrentLocation(curPos.first,curPos.second);
 	PathFollower::resetPosition(curPos);
 
 	typedef std::chrono::high_resolution_clock Clock;
@@ -64,80 +44,62 @@ int main()
 	Clock::time_point clk_start = Clock::now();
 
 	double seconds = 90;
-	endWay();
 	while(std::chrono::duration_cast<milliseconds>(Clock::now()-clk_start).count()<seconds*1000)
 	{
 		if(start&&!started)
 		{
 			printf("Start\n");
 			started = true;
-			ffollow(ways[way].c_str(), &endWay);
+			clk_start = Clock::now();
 		}
-
-		if(!isMovingToAction)
-			if(actions[way].isFinished())
-			{
-				actions[way].stopAction();
-				endAction();
-			}
-
-		if(seeBlocked)
+		else if(started)
 		{
-			if(PathFollower::isSpeedPositive())
+			if(!isMovingToAction)
+				if(actions[way].isFinished())
+				{
+					actions[way].stopAction();
+					endAction();
+				}
+
+			if(seeBlocked)
 			{
-				if(!isRobotFront())
-					seeBlocked = false;
+				if(PathFollower::isSpeedPositive())
+				{
+					if(!isRobotFront())
+						seeBlocked = false;
+					else
+						pauseActionOrWay();
+				}
 				else
-					if(!PathFollower::isPaused())
-					{
-						blocked = true;
-						pausePath = false;
-						if(isMovingToAction)
-						{
-							pausePath = true;
-							PathFollower::pause();
-						}
-						else
-							actions[way].pauseAction();
-					}
+				{
+					if(!isRobotBehind())
+						seeBlocked = false;
+					else
+						pauseActionOrWay();
+				}
 			}
-			else
-			{
-				if(!isRobotBehind())
-					seeBlocked = false;
-				else
-					if(!PathFollower::isSpeedPositive())
-						if(!PathFollower::isPaused())
-						{
-							blocked = true;
-							pausePath = false;
-							if(isMovingToAction)
-							{
-								pausePath = true;
-								PathFollower::pause();
-							}
-							else
-								actions[way].pauseAction();
-						}
-			}
+
+			if(!seeBlocked)
+				if(blocked)
+				{
+					blocked = false;
+					if(pausePath)
+						PathFollower::continueMoving();
+					else
+						actions[way].continueAction();
+				}
+
+			curPos = PathFollower::getCurrentPos();
+			/*std::cout<<"---------------"<<std::endl;
+			std::cout<<"Cur action : "<<way<<" => "<<actions[way].isFinished()<<std::endl;*/
+			std::cout<<curPos.first<<" "<<curPos.second<<std::endl;
+			//std::cout<<"is blocked ? "<<blocked<<" is paused moving ? "<<pausePath<<" see blocked ? "<<seeBlocked<<std::endl;
 		}
-
-		if(!seeBlocked)
-			if(blocked)
-			{
-				blocked = false;
-				if(pausePath)
-					PathFollower::continueMoving();
-				else
-					actions[way].continueAction();
-			}
-
-		/*curPos = PathFollower::getCurrentPos();
-		  curDir = PathFollower::getCurrentDirection();
-		  std::cout<<curPos.first<<" "<<curPos.second<<";"<<curDir.first<<" "<<curDir.second<<std::endl;*/
 
 		waitFor(50);
 	}
+
+	endCallback();
 
 	return 0;
 }
